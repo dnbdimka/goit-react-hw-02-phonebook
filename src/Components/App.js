@@ -4,11 +4,6 @@ import ContactForm from "./contactForm/ContactForm";
 import ContactList from "./contactList/ContactList";
 import Filter from "./filter/Filter";
 
-const INITIAL_STATE = {
-  name: "",
-  number: "",
-};
-
 class App extends Component {
   state = {
     contacts: [
@@ -18,29 +13,39 @@ class App extends Component {
       { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
     ],
     filter: "",
-    name: "",
-    number: "",
   };
 
-  handleInputChange = (e) => {
+  removeContactById = (id) => {
+    this.setState((prev) => ({
+      contacts: [...prev.contacts.filter((contact) => contact.id !== id)],
+    }));
+  };
+
+  onFilterInput = (e) => {
     const { value, name } = e.target;
     this.setState({ [name]: value });
   };
 
-  handelSubmitForm = (e) => {
-    e.preventDefault();
+  onAddNewContact = (contact) => {
     // const newContact = {
     // name: this.state.name,
     // number: this.state.number,
     // id: uuidv4(),
     // };
     // this.state.contacts.push(newContact);
+    if (
+      this.state.contacts.some((contactState) =>
+        contactState.name.toLowerCase().includes(contact.name.toLowerCase())
+      )
+    ) {
+      alert(`${contact.name} is already in contacts.`);
+      return;
+    }
     this.setState((prev) => ({
       contacts: [
         ...prev.contacts,
-        { name: this.state.name, number: this.state.number, id: uuidv4() },
+        { name: contact.name, number: contact.number, id: uuidv4() },
       ],
-      ...INITIAL_STATE,
     }));
   };
 
@@ -49,17 +54,12 @@ class App extends Component {
       <>
         <div>
           <h1>Phonebook</h1>
-          <ContactForm
-            handelSubmitForm={this.handelSubmitForm}
-            handleInputChange={this.handleInputChange}
-            name={this.state.name}
-            number={this.state.number}
-          />
+          <ContactForm onAddNewContact={this.onAddNewContact} />
 
           <h2>Contacts</h2>
           {this.state.contacts.length !== 0 && (
             <Filter
-              handleInputChange={this.handleInputChange}
+              onFilterInput={this.onFilterInput}
               filter={this.state.filter}
             />
           )}
@@ -67,6 +67,7 @@ class App extends Component {
           <ContactList
             contacts={this.state.contacts}
             filterValue={this.state.filter}
+            removeContactById={this.removeContactById}
           />
         </div>
       </>

@@ -1,10 +1,10 @@
 import React from "react";
+import ContactListItem from "./contactListItem/ContactListItem";
 
-const ContactList = ({ contacts, filterValue }) => {
+const ContactList = ({ contacts, filterValue, removeContactById }) => {
   const newArr = [...contacts].filter((contact) =>
-    contact.name.toUpperCase().includes(filterValue.toUpperCase())
+    contact.name.toLowerCase().includes(filterValue.toLowerCase())
   );
-  //   console.log(newArr);
 
   return (
     <>
@@ -13,9 +13,10 @@ const ContactList = ({ contacts, filterValue }) => {
           {newArr.length !== 0 ? (
             <ul>
               {newArr.map((contact) => (
-                <li key={contact.id}>
-                  {contact.name}: {contact.number}
-                </li>
+                <ContactListItem
+                  contact={contact}
+                  removeContactById={removeContactById}
+                />
               ))}
             </ul>
           ) : (
